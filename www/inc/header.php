@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<?php
+	var header="<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -54,6 +55,9 @@
                     <li>
                         <a href="admins.html">Admins</a>
                     </li>
+                    <li>
+                    	<a href="#">Log Off</a>
+                    </li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -62,57 +66,5 @@
     </nav>
 
     <!-- Page Content -->
-    <div class="container">
-
-        <div class="row">
-            <h1>Devices</h1>
-            <br />
-            <button>New</button>
-            <br /><br />
-            <div class="bs-example">
-    			<table class="table">
-       		 	<thead>
-            		<tr>
-                		<th>ID</th>
-                		<th>Device</th>
-                		<th></th>
-                		<th></th>
-            		</tr>
-        		</thead>
-        		<tbody>
-            		<tr>
-                		<td>1</td>
-                		<td>Laptop</td>
-                		<td><button>Group</button></td>
-                		<td><button>Edit</button> <button>Delete</button></td>
-            		</tr>
-            		<tr>
-                		<td>2</td>
-                		<td>Phone</td>
-                		<td><button>Group</button></td>
-                		<td><button>Edit</button> <button>Delete</button></td>
-            		</tr>
-            		<tr>
-                		<td>3</td>
-                		<td>Android Tablet</td>
-                		<td><button>Group</button></td>
-                		<td><button>Edit</button> <button>Delete</button></td>
-            		</tr>
-        		</tbody>
-    			</table>
-			</div>
-        </div>
-        <!-- /.row -->
-
-    </div>
-    <!-- /.container -->
-
-    <!-- jQuery Version 1.11.1 -->
-    <script src="js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-
-</body>
-
-</html>
+    <div class="container">";
+?>

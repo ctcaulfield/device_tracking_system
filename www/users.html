@@ -20,6 +20,14 @@
     }
     </style>
 
+	<!-- JavaScript -->
+	<script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-database.js"></script>
+    <script src="js/firebaseLogic.js"></script>
+    <script src="js/popupBox.js"></script>
+	
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -40,7 +48,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Admin Console</a>
+                <a class="navbar-brand" href="index.html">Super Admin Console</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -50,9 +58,6 @@
                     </li>
                     <li>
                         <a href="devices.html">Devices</a>
-                    </li>
-                    <li>
-                        <a href="checkout.html">Check Out</a>
                     </li>
                     <li>
                         <a href="admins.html">Admins</a>
@@ -70,16 +75,16 @@
         <div class="row">
             <h1>Users</h1>
             <br />
-            <button>New</button>
+            <button type="button" onclick="addNewUserInfo()">New</button>
             <br /><br />
             <div class="bs-example">
-    			<table class="table">
+    			<table class="table" id="user-table">
        		 	<thead>
             		<tr>
                 		<th>ID</th>
                 		<th>Name</th>
                 		<th>RFID #</th>
-                		<th></th>
+                		<th>Active</th>
             		</tr>
         		</thead>
         		<tbody>
@@ -87,7 +92,7 @@
                 		<td>1</td>
                 		<td>John Carter</td>
                 		<td>123456</td>
-                		<td><button>Edit</button> <button>Delete</button></td>
+                		<td><button type="button" onclick="alert('Hellow world')">Edit</button> <button>Delete</button></td>
             		</tr>
             		<tr>
                 		<td>2</td>

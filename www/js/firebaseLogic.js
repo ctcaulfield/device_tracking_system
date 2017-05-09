@@ -34,6 +34,7 @@ var setupDatabase,//()
 };
 firebase.initializeApp(config);
 
+
 var database = firebase.database();
 //var auth = firebase.auth();
 
