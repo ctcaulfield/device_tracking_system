@@ -58,12 +58,20 @@ setupDatabase = function(){
 };
 
 addUser = function(name, rfid, devicesAllowed=[]){
-    //name=string, rfid=string, devicesAllowed=[deviceIds]    
-    var promise = database.ref('users/' + rfid).set({
-        name: name,
-        rfid: rfid,
-        hasDevices: [],
-        devicesAllowed: devicesAllowed
+    //name=string, rfid=string, devicesAllowed=[deviceIds]
+    
+    var promise = database.ref('users/' + rfid).transaction(function(currData){
+        if(currData){
+            return currData;
+        }else{
+            return{ 
+                name: name,
+                rfid: rfid,
+                hasDevices: [],
+                devicesAllowed: devicesAllowed
+             };
+        }
+       
     });
     promise.then(function(){
         if(promise){
@@ -76,11 +84,17 @@ addUser = function(name, rfid, devicesAllowed=[]){
 
 addDevice = function(deviceId, name, location=""){
     //deviceID=string, name=string, location=string    
-    var promise = database.ref('devices/' + deviceId).set({
-        name: name,
-        deviceId: deviceId,
-        usersHas: [],
-        usersAllowed: []
+    var promise = database.ref('devices/' + deviceId).transaction(function(currData){
+         if(currData){
+            return currData;
+        }else{
+            return{ 
+                name: name,
+                deviceId: deviceId,
+                usersHas: [],
+                usersAllowed: []
+            };
+        }
     });
     promise.then(function(){
         if(promise){
@@ -117,13 +131,40 @@ addAllowedUsers = function(deviceId, users){
 checkoutDevice = function(rfid, deviceId){
     //rfid=string, deviceId=string
     
-    var promise = database.ref('users/'+rfid).transaction(function(currData) {
-        if(currData.devicesAllowed[deviceId] && !currData.hasDevices[deviceId]){
-            currData.hasDevices.push(deviceId);
-            
-            database.ref('devices/' +deviceId).transaction(function(currData2){
-                currData2.usersHas.push(rfid);
+    var promise = database.ref('users/'+rfid).once('value', function(snapshot) {
+        
+        if(snapshot.exists()){
+            if(snapshot.val().hasDevices){
+                var hasDevices = snapshot.val().hasDevices;
+                var alreadyHasDevice =false;
+                hasDevices.forEach(function(item, index){
+                    if (item === deviceId){
+                        alreadyHasDevice = true;
+                        return;
+                    }
+                });
+                if(!alreadyHasDevice){
+                    
+                    hasDevices.push(deviceId);
+                    console.log(hasDevices);
+                    database.ref('users/'+rfid).update({hasDevices: hasDevices});
+                }
+               
+            }else{
+                database.ref('users/'+rfid).update({hasDevices: [deviceId]});
+            }
+            database.ref('devices/' +deviceId).once('value', function(snapshot2){
+                if(snapshot2.exists()){
+                    if(snapshot2.val().usersHas){
+                        var usersHas = snapshot2.val().usersHas;
+                        usersHas.push(rfid);
+                        database.ref('devices/' +deviceId).update({usersHas: usersHas});
+                    }else{
+                        database.ref('devices/' +deviceId).update({usersHas: [rfid]});
+                    }
+                }
             });
+                
         }
     });
     promise.then(function(){
@@ -133,20 +174,38 @@ checkoutDevice = function(rfid, deviceId){
             console.log("Error: Could not sign out device " + deviceId + " to " + rfid);
         }
     });
+    return promise;
 };
 
 checkinDevice = function(rfid, deviceId){
     //rfid=string, deviceId=string
-    
-    var promise = database.ref('users/'+rfid).transaction(function(currData) {
-        if(currData.hasDevices[deviceId]){
-            var index = currData.hasDevices.indexOf(deviceId);
-            currData.hasDevices.splice(index, 1);
-            
-            database.ref('devices/' +deviceId).transaction(function(currData2){
-                var index2 = currData2.usersHas.indexOf(rfid);
-                currData2.usersHas.splice(index2, 1);
+    var promise = database.ref('users/'+rfid).once('value', function(snapshot) {
+       if(snapshot.exists()){
+           if (snapshot.val().hasDevices.length<2){
+               var array = [];
+           }else{
+                var index = snapshot.val().hasDevices.indexOf(deviceId.toString());
+                console.log("index of device to checkin" + index);
+                console.log(snapshot.val().hasDevices.splice(index, 1));
+                var array = snapshot.val().hasDevices;//.hasDevices.splice(index, 1);
+               delete array[index];
+               console.log(array);
+           }
+           
+            database.ref('users/'+rfid).update({hasDevices: array});
+
+            database.ref('devices/' +deviceId).once('value', function(snapshot2){
+                if(snapshot2.val().usersHas.length <2){
+                    var array2 = [];
+                }else{
+                    var index2 = snapshot2.val().usersHas.indexOf(rfid);
+                    var array2 = snapshot2.val().usersHas;//.usersHas.splice(index2, 1);
+                    delete array2[index2];
+                }
+                
+               database.ref('devices/' +deviceId).update({usersHas:array2});
             });
+     
         }
     });
     promise.then(function(){
@@ -156,6 +215,7 @@ checkinDevice = function(rfid, deviceId){
             console.log("Error: Could not sign in device " + deviceId + " from " + rfid);
         }
     });
+    return promise;
 };
 
 getUserData = function(rfid){
@@ -163,8 +223,11 @@ getUserData = function(rfid){
     //returns promise that resolves to JSON object
     
     var promise = database.ref('users/' + rfid).once('value').then(function(snapshot){
-        var userData = snapshot.val();
-        return Promise.resolve(userData);
+        if(snapshot.exists()){
+            var userData = snapshot.val();
+            return Promise.resolve(userData);
+        }
+        return Promise.resolve({});
     });
     promise.then(function(value){
         if(promise){

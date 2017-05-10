@@ -1,0 +1,85 @@
+/*
+    How to access this event data in js
+    
+    ****add this script:
+    <script type="text/javascript" src="//cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
+    
+    ****in js file/script:
+    var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
+    var particle = new Particle();
+    
+    particle.getEventStream({ name: 'ValidIdFound', auth: accessToken}).then(function(stream) {
+        stream.on('event', callback);
+    });
+    
+    function callback(data){}
+*/
+
+void setup() {
+    //to get info from RFID
+    Serial1.begin(9600);
+    //To get info from photon and print it
+    Serial.begin(9600);
+    RGB.control(true);
+    RGB.color(255,0,0);
+}
+
+void loop() {
+    String id = getTagId();
+
+    if(id != "Error"){//if valid id is available, update the id variable and turn getId off
+       Particle.publish("ValidIDFound", id);
+
+       RGB.color(0,255,0);
+       delay(1000);
+       RGB.color(255,0,0);
+    }
+    
+    delay(10);
+}//loop
+
+
+/////// METHODS //////////
+
+String getTagId(){
+    char input[12];
+    
+    if (Serial1.available()){
+        int count = 0;
+        while(Serial1.available() && count < 12){
+            //read 12 characters and store them in input
+            input[count] = Serial1.read();
+            count++;
+            delay(5);
+        }
+        
+        if(checkValidInput(input)){
+            //return the id
+            return charToString(input);
+        } else {
+            Serial.println("Error: Invalid Serial1 input");
+        }//input ^ if/else
+    } else {
+        Serial.println("Error: Tag not available");
+        delay(1000);
+    }//serial1.avialable if/else
+    
+    return "Error";
+}
+
+String charToString(char charArray[12]){
+    String newString = "";
+    for (int i=0; i < 12; i++){
+        newString += charArray[i];
+    }
+    return newString;
+}
+
+
+bool checkValidInput(char inputValue[12]){
+    if((inputValue[0] ^ inputValue[2] ^ inputValue[4] ^ inputValue[6] ^ inputValue[8] == inputValue[10]) 
+    && (inputValue[1] ^ inputValue[3] ^ inputValue[5] ^ inputValue[7] ^ inputValue[9] == inputValue[11])){
+        return true;
+    }
+    return false;
+}
