@@ -182,8 +182,20 @@ checkoutDevice = function(rfid, deviceId){
                 if(snapshot2.exists()){
                     if(snapshot2.val().usersHas){
                         var usersHas = snapshot2.val().usersHas;
-                        usersHas.push(rfid);
-                        database.ref('devices/' +deviceId).update({usersHas: usersHas});
+                        var userAlreadyHas =false;
+                        usersHas.forEach(function(item, index){
+                            if (item === rfid){
+                                userAlreadyHas = true;
+                                return;
+                            }
+                        });
+                        if(!userAlreadyHas){
+
+                            usersHas.push(rfid);
+                            console.log(usersHas);
+                            database.ref('devices/' +deviceId).update({usersHas: usersHas});
+                        }
+         
                     }else{
                         database.ref('devices/' +deviceId).update({usersHas: [rfid]});
                     }

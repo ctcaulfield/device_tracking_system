@@ -100,7 +100,7 @@
                     });
                 }
                 if(value.hasDevices){
-                    console.log("value.hasDevices " );
+                    console.log("value.hasDevices");
                     console.log(value["hasDevices"]);
                     value.hasDevices.forEach(function(item,index){
                         console.log("item in hasOut:"+item);
@@ -126,7 +126,7 @@
 
         function checkoutItem(){
             console.log("checkout item");
-            if(rfid){
+            if(rfid && allowedTable.getSelection().length>0){
                 var index = allowedTable.getSelection();
                 var deviceId = allowedTableData.getValue(index[0].row, 0);
                 checkoutDevice(rfid, deviceId).then(function(){
@@ -138,7 +138,7 @@
 
         function returnItem(){
             console.log("return item");
-            if(rfid){
+            if(rfid && hasOutTable.getSelection().length>0){
                 var index = hasOutTable.getSelection();
                 var deviceId = hasOutTableData.getValue(index[0].row, 0);
                 checkinDevice(rfid, deviceId).then(function(){
