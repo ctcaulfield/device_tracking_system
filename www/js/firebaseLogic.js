@@ -17,11 +17,11 @@
 ////(?parameterName=valueType) ? means it has a default and is not required
 
 var setupDatabase,//()
-    addUser,//(name=string, rfid=string, ?adminStatus=bool, ?devicesAllowed=[deviceIds])
-    addDevice,//(deviceID=string, name=string, ?location=string)
-    addAllowedUsers,//(deviceId=string, users=[rfid=string])
-    checkoutDevice,//(rfid=string, deviceId=string)
-    checkinDevice,//(rfid=string, deviceId=string)
+    addUser,//(name=string, rfid=string) -> promise
+    addDevice,//(deviceID=string, name=string, ?location=string) -> promise
+    addAllowedUsers,//(deviceId=string, rfid=string) -> promise
+    checkoutDevice,//(rfid=string, deviceId=string) -> promise
+    checkinDevice,//(rfid=string, deviceId=string) -> promise
     getUserData,//(rfid=string) -> promise resolves to JSON object
     getDeviceData,//(deviceId=string) -> promise resolves to JSON object
     getAdminList;//() -> promise resolves to JSON object
@@ -57,7 +57,7 @@ setupDatabase = function(){
       });
 };
 
-addUser = function(name, rfid, devicesAllowed=[]){
+addUser = function(name, rfid){
     //name=string, rfid=string, devicesAllowed=[deviceIds]
     
     var promise = database.ref('users/' + rfid).transaction(function(currData){
@@ -67,8 +67,6 @@ addUser = function(name, rfid, devicesAllowed=[]){
             return{ 
                 name: name,
                 rfid: rfid,
-                hasDevices: [],
-                devicesAllowed: devicesAllowed
              };
         }
        
@@ -106,18 +104,45 @@ addDevice = function(deviceId, name, location=""){
 
 };
 
-addAllowedUsers = function(deviceId, users){
-    //deviceId=string, users=[rfid=string]
+addAllowedUser = function(deviceId, rfid){
+    //deviceId=string, rfid=string
     
     var promise = database.ref('devices/'+deviceId).transaction(function(currData){
-        currData.usersAllowed.forEach(function(index, userRfid){
-            if(!currData.usersAllowed[userRfid]){
-                currData.usersAllowed.push(userRfid);
-                database.ref('users/'+userRfid).transaction(function(currData2){
-                    currData2.devicesAllowed.push(deviceId);
+        database.ref('users/'+rfid).transaction(function(currData2){
+            var alreadyHasDevice = false;
+            if(currData2.devicesAllowed){
+                currData2.devicesAllowed.forEach(function(item, index){
+                    if (item === deviceId){
+                        alreadyHasDevice = true;
+                        return;
+                    }
                 });
-            }                       
+                if(!alreadyHasDevice){
+                    currData2.devicesAllowed.push(deviceId);
+                }
+            }else{
+                currData2.devicesAllowed = [deviceId]
+            }
+            return currData2;
         });
+
+        var alreadyHasUser = false;
+        if(currData.usersAllowed){
+            currData.usersAllowed.forEach(function(item, index){
+                if (item === rfid){
+                    alreadyHasUser = true;
+                    return;
+                }
+            });
+            if(!alreadyHasUser){
+                currData.usersAllowed.push(rfid);
+                
+            }
+        }else{
+            currData.usersAllowed = [rfid];
+        }
+        return currData;
+
     });
     promise.then(function(){
         if(promise){
