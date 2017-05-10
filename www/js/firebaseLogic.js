@@ -5,6 +5,12 @@
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-database.js"></script>
     <script src="firebaseLogic.js"></script>
+    
+    get data like this:
+    
+    getUserData(rfid).then(function(value){
+        // value is the user data
+    });
 
 */
 
@@ -13,13 +19,12 @@
 var setupDatabase,//()
     addUser,//(name=string, rfid=string, ?adminStatus=bool, ?devicesAllowed=[deviceIds])
     addDevice,//(deviceID=string, name=string, ?location=string)
-    makeAdmin,//(rfid=string)
     addAllowedUsers,//(deviceId=string, users=[rfid=string])
     checkoutDevice,//(rfid=string, deviceId=string)
     checkinDevice,//(rfid=string, deviceId=string)
-    getUserData,//(rfid=string) -> JSON object
-    getDeviceData,//(deviceId=string) -> JSON object
-    getAdminList;//() -> array
+    getUserData,//(rfid=string) -> promise resolves to JSON object
+    getDeviceData,//(deviceId=string) -> promise resolves to JSON object
+    getAdminList;//() -> promise resolves to JSON object
     
  
 
@@ -33,7 +38,6 @@ var setupDatabase,//()
     messagingSenderId: "865633170027"
 };
 firebase.initializeApp(config);
-
 
 var database = firebase.database();
 //var auth = firebase.auth();
@@ -53,49 +57,45 @@ setupDatabase = function(){
       });
 };
 
-addUser = function(name, rfid, adminStatus=false, devicesAllowed=[]){
-    //name=string, rfid=string, adminStatus=bool, devicesAllowed=[deviceIds]    
-    var success = database.ref('users/' + rfid).set({
+addUser = function(name, rfid, devicesAllowed=[]){
+    //name=string, rfid=string, devicesAllowed=[deviceIds]    
+    var promise = database.ref('users/' + rfid).set({
         name: name,
         rfid: rfid,
-        admin: adminStatus,
         hasDevices: [],
         devicesAllowed: devicesAllowed
     });
-    if(success){
+    promise.then(function(){
+        if(promise){
             console.log("Added user: " + name);
-    }else{
+        }else{
             console.log("Error: Could not add user: " + name);
-    }
+        }
+    });
 };
 
 addDevice = function(deviceId, name, location=""){
     //deviceID=string, name=string, location=string    
-    var success = database.ref('devices/' + deviceId).set({
+    var promise = database.ref('devices/' + deviceId).set({
         name: name,
         deviceId: deviceId,
         usersHas: [],
         usersAllowed: []
     });
-    if(success){
+    promise.then(function(){
+        if(promise){
             console.log("Added device: " + name);
-    }else{
+        }else{
             console.log("Error: Could not add device: " + name);
-    }
-
-};
-
-makeAdmin = function(rfid){
-    //rfid=string
-    var success = database.ref('users/' + rfid).transaction(function(currData){
-       currData.admin = true; 
+        }
     });
+
 };
 
 addAllowedUsers = function(deviceId, users){
     //deviceId=string, users=[rfid=string]
     
-    var success = database.ref('devices/'+deviceId).transaction(function(currData){
+    var promise = database.ref('devices/'+deviceId).transaction(function(currData){
         currData.usersAllowed.forEach(function(index, userRfid){
             if(!currData.usersAllowed[userRfid]){
                 currData.usersAllowed.push(userRfid);
@@ -105,17 +105,19 @@ addAllowedUsers = function(deviceId, users){
             }                       
         });
     });
-    if(success){
+    promise.then(function(){
+        if(promise){
             console.log("Successfully added user " + rfid + " to " + deviceId );
-    }else{
+        }else{
             console.log("Error: Could not add user " + rfid + " to " + deviceId);
-    }
+        }
+    });
 };
 
 checkoutDevice = function(rfid, deviceId){
     //rfid=string, deviceId=string
     
-    var success = database.ref('users/'+rfid).transaction(function(currData) {
+    var promise = database.ref('users/'+rfid).transaction(function(currData) {
         if(currData.devicesAllowed[deviceId] && !currData.hasDevices[deviceId]){
             currData.hasDevices.push(deviceId);
             
@@ -124,18 +126,19 @@ checkoutDevice = function(rfid, deviceId){
             });
         }
     });
-
-    if(success){
+    promise.then(function(){
+        if(promise){
             console.log("Successfully signed out device " + deviceId + " to " + rfid);
-    }else{
+        }else{
             console.log("Error: Could not sign out device " + deviceId + " to " + rfid);
-    }
+        }
+    });
 };
 
 checkinDevice = function(rfid, deviceId){
     //rfid=string, deviceId=string
     
-    var success = database.ref('users/'+rfid).transaction(function(currData) {
+    var promise = database.ref('users/'+rfid).transaction(function(currData) {
         if(currData.hasDevices[deviceId]){
             var index = currData.hasDevices.indexOf(deviceId);
             currData.hasDevices.splice(index, 1);
@@ -146,57 +149,62 @@ checkinDevice = function(rfid, deviceId){
             });
         }
     });
-
-    if(success){
+    promise.then(function(){
+        if(promise){
             console.log("Successfully signed in device " + deviceId + " from " + rfid);
-    }else{
+        }else{
             console.log("Error: Could not sign in device " + deviceId + " from " + rfid);
-    }
+        }
+    });
 };
 
 getUserData = function(rfid){
     //rfid=string
-    //returns JSON object
-    var userData;
-    var success = database.ref('users/' + rfid).once('value').then(function(snapshot){
-        userData = snapshot.val();
+    //returns promise that resolves to JSON object
+    
+    var promise = database.ref('users/' + rfid).once('value').then(function(snapshot){
+        var userData = snapshot.val();
+        return Promise.resolve(userData);
     });
-    if(success){
-        console.log("Got info for user: " + userData.name);
-        return userData;
-    }else{
-        console.log("Error: Could not get info for user: " + rfid);
-        return {};
-    }
+    promise.then(function(value){
+        if(promise){
+            console.log("Got info for user: " + value.name);
+        }else{
+            console.log("Error: Could not get info for user: " + rfid);
+        }
+    });
+    return promise;
  };
 
 getDeviceData = function(deviceId){
     //deviceId=string
     //returns JSON object
-    var deviceData;
-    var success = database.ref('devices/' + deviceId).once('value').then(function(snapshot){
-        deviceData = snapshot.val();
+    var promise = database.ref('devices/' + deviceId).once('value').then(function(snapshot){
+        var deviceData = snapshot.val();
+        return Promise.resolve(deviceData);
     });
-    if(success){
-        console.log("Got info for device: " + deviceData.name);
-        return deviceData;
-    }else{
-        console.log("Error: Could not get info for device: " + deviceId);
-        return {};
-    }
+    promise.then(function(value){
+        if(promise){
+            console.log("Got info for device: " + value.name);
+        }else{
+            console.log("Error: Could not get info for device: " + deviceId);
+        }
+    });
+    return promise;
 };
 
 getAdminList = function(){
     //returns array
-    var adminList;
-    var success = database.ref('admins').once('value').then(function(snapshot){
-        adminList = snapshot.val();
+    var promise = database.ref('admins').once('value').then(function(snapshot){
+        var adminList = snapshot.val();
+        return Promise.resolve(adminList);
     });
-    if(success){
-        console.log("Got admin list");
-        return deviceData;
-    }else{
-        console.log("Error: Could not get admin list");
-        return [];
-    }
+    promise.then(function(){
+        if(promise){
+            console.log("Got admin list");
+        }else{
+            console.log("Error: Could not get admin list");
+        }
+    });
+    return promise;
  };
