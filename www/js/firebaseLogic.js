@@ -24,8 +24,8 @@ var setupDatabase,//()
     checkinDevice,//(rfid=string, deviceId=string) -> promise
     getUserData,//(rfid=string) -> promise resolves to JSON object
     getDeviceData,//(deviceId=string) -> promise resolves to JSON object
-    getAdminList;//() -> promise resolves to JSON object
-    
+    getAdminList,//() -> promise resolves to JSON object
+    getDeviceList;//() ->promise resolves to JSON object
  
 
 // Initialize Firebase
@@ -308,3 +308,40 @@ getAdminList = function(){
     });
     return promise;
  };
+ 
+getDeviceList = function() {
+	//returns array of device
+	var promise = database.ref('devices').once('value').then(function(snapshot) {
+		var deviceList = snapshot.val();
+        return Promise.resolve(deviceList);
+	});
+	promise.then(function(value) {
+		if(promise) {
+			console.log("Got Device list");
+		}else {
+			console.log("Error: Could not get device list");
+		}
+	});
+	return promise;
+}
+deleteDevice = function(deviceId) {
+	
+}
+updateDevice = function(deviceId) {
+	
+}
+getUserList = function() {
+	//returns array of user
+	var promise = database.ref('users').once('value').then(function(snapshot) {
+		var userList = snapshot.val();
+		return Promise.resolve(userList);
+	});
+	promise.then(function(value) {
+		if(promise) {
+			console.log("Got User List");
+		}else {
+			console.log("Error: Could not get user list");
+		}
+	});
+	return promise;
+}

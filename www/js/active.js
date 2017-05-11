@@ -3,6 +3,33 @@ var clickNewUser = true;
 var editUser = "";
 var editRFID = "";
 
+//get user list
+function getUsers() {
+ 	getUserList().then(function(value) {
+		var table = document.getElementById("user-table");
+		console.log(value);
+		// for(var i=0; i<value.length; i++) {
+// 			var rowNum = table.rows.length;
+// 			var row = table.insertRow(rowNum);
+// 			var idCell = row.insertCell(0);
+// 			var nameCell = row.insertCell(1);
+// 			var RFIDCell = row.insertCell(2);
+// 			var activeCell = row.insertCell(3);
+// 	
+// 			idCell.id="id"+rowNum;
+// 			nameCell.id="name"+rowNum;
+// 			RFIDCell.id="rfid"+rowNum;
+// 			activeCell.id="active"+rowNum;
+// 		
+// 			idCell.innerHTML = rowNum;
+// 			nameCell.innerHTML = value[i].name;
+// 			RFIDCell.innerHTML = value[i];
+// 			activeCell.innerHTML = "<button type='button' onclick='saveUserBtn("+rowNum+")'>Save</button> <button type='button' onclick='cancelUserBtn("+rowNum+")'>Cancel</button>";
+// 		}
+	});	
+	
+}
+
 //Add Input for new user info
 function addNewUserInfo() {
 	if(clickNewUser) {
@@ -94,6 +121,31 @@ function cancelEditedUser(id) {
 var clickNewDevice = true;
 var editDevice = "";
 
+function getDevices() {
+    getDeviceList().then(function(value) {
+    	console.log(value);
+    	var table = document.getElementById('device-table');
+		for(var i=0; i < value.length; i++) {
+			var rowNum = table.rows.length;
+			var row = table.insertRow(rowNum);
+			var idCell = row.insertCell(0);
+			var nameCell = row.insertCell(1);
+			var groupCell = row.insertCell(2);
+			var activeCell = row.insertCell(3);
+	
+			idCell.id="id";
+			nameCell.id="device"+rowNum;
+			groupCell.id="group"+rowNum;
+			activeCell.id="active"+rowNum;
+		
+			idCell.innerHTML = rowNum;
+			nameCell.innerHTML = value[i].name;
+			groupCell.innerHTML = "<button type='button' onclick='alert(\"Group\")' >Group</button>";
+			activeCell.innerHTML = "<button type='button' onclick='editDeviceBtn("+i+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+i+")'>Delete</button>";
+    	}
+    }); 
+}
+
 //Add Input for new user info
 function addNewDevice() {
 	if(clickNewDevice) {
@@ -105,7 +157,7 @@ function addNewDevice() {
 		var groupCell = row.insertCell(2);
 		var activeCell = row.insertCell(3);
 	
-		idCell.id="id"+rowNum;
+		idCell.id="id";
 		nameCell.id="device"+rowNum;
 		groupCell.id="group"+rowNum;
 		activeCell.id="active"+rowNum;
@@ -131,22 +183,24 @@ function saveDeviceBtn(id) {
  		var table = document.getElementById("device-table");
  		table.rows[id].cells[1].innerHTML = device;
  		table.rows[id].cells[3].innerHTML = "<button type='button' onclick='editDeviceBtn("+id+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+id+")'>Delete</button>";
+ 		addDevice(4, device);
  		clickNewUser = true;
  	}
 }
 
-//cancel new user
+//cancel new device
 function cancelDeviceBtn(id) {
 	var table = document.getElementById("device-table").deleteRow(id);
 	clickNewUser = true;
 }
 
-//delete an user
+//delete an device
 function deleteDeviceBtn(id) {
 	var table = document.getElementById("device-table").deleteRow(id);
+	deleteDevice(id);
 }
 
-//edit an user
+//edit an device
 function editDeviceBtn(id) {
 	var nameCell = document.getElementById("device"+id);
 	var activeCell = document.getElementById("active"+id);
@@ -157,7 +211,7 @@ function editDeviceBtn(id) {
 	activeCell.innerHTML = "<button type='button' onclick='saveDeviceBtn("+id+")'>Save</button> <button type='button' onclick='cancelEditedDevice("+id+")'>Cancel</button>";
 }
 
-//cancel Edited User
+//cancel Edited device
 function cancelEditedDevice(id) {
 	var nameCell = document.getElementById("device"+id);
 	var activeCell = document.getElementById("active"+id);
@@ -211,18 +265,19 @@ function saveAdminBtn(id) {
  	}
 }
 
-//cancel new user
+//cancel new admin
 function cancelAdminBtn(id) {
 	var table = document.getElementById("admin-table").deleteRow(id);
 	clickNewAdmin = true;
 }
 
-//delete an user
+//delete an admin
 function deleteAdminBtn(id) {
 	document.getElementById("admin-table").deleteRow(id);
+	
 }
 
-//edit an user
+//edit an admin
 function editAdminBtn(id) {
 	var adminCell = document.getElementById("admin"+id);
 	var activeCell = document.getElementById("active"+id);
@@ -233,7 +288,7 @@ function editAdminBtn(id) {
 	activeCell.innerHTML = "<button type='button' onclick='saveAdminBtn("+id+")'>Save</button> <button type='button' onclick='cancelEditedAdmin("+id+")'>Cancel</button>";
 }
 
-//cancel Edited User
+//cancel Edited admin
 function cancelEditedAdmin(id) {
 	var adminCell = document.getElementById("admin"+id);
 	var activeCell = document.getElementById("active"+id);
