@@ -19,13 +19,14 @@
         /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
     }
     </style>
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    
+    <!-- JavaScript -->
+	<script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-database.js"></script>
+    <script src="js/firebaseLogic.js"></script>
+    <script src="js/active.js"></script>
 
 </head>
 <body>
@@ -67,16 +68,16 @@
         <div class="row">
             <h1>Devices</h1>
             <br />
-            <button>New</button>
+            <button type='button' onclick='addNewDevice()'>New</button>
             <br /><br />
             <div class="bs-example">
-    			<table class="table">
+    			<table class="table" id='device-table'>
        		 	<thead>
             		<tr>
                 		<th>ID</th>
                 		<th>Device</th>
                 		<th></th>
-                		<th></th>
+                		<th>Active</th>
             		</tr>
         		</thead>
         		<tbody>
