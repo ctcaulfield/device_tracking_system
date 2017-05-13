@@ -1,7 +1,6 @@
-var options = [];
+// var options = [];
 
 $( '.dropdown-menu a' ).on( 'click', function( event ) {
-	console.log("TEST DROPBOX");
    var $target = $( event.currentTarget ),
        val = $target.attr( 'data-value' ),
        $inp = $target.find( 'input' ),
@@ -20,3 +19,18 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
    console.log( options );
    return false;
 });
+
+function checkBoxEvent(event,data) {
+	var args = data.split("-");
+	var rfid = args[0];
+	var deviceId = args[1];
+	
+	if(event.checked) {
+		addAllowedUser(deviceId,rfid);
+		
+	} else {
+		
+	}
+	
+	
+}

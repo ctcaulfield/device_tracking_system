@@ -3,6 +3,7 @@ var clickNewUser = true;
 var editUser = "";
 var editRFID = "";
 var deviceArray = [];
+var deviceIdArray = [];
 
 //get user list
 function getUsers() {
@@ -26,9 +27,11 @@ function getUsers() {
 			allowCell.id="allow"+id;
 			activeCell.id="active"+id;
 			
+			console.log(value[i].usersAllowed);
+			
 			nameCell.innerHTML = name
 			RFIDCell.innerHTML = rfid;
-			allowCell.innerHTML = createAllowListBtn(deviceArray);
+			allowCell.innerHTML = createAllowListBtn(rfid, deviceArray);
 			activeCell.innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
 			id++;
 		}
@@ -55,7 +58,7 @@ function addNewUserInfo() {
 		
 		nameCell.innerHTML = "<input type='text' id='input-name"+id+"' />";
 		RFIDCell.innerHTML = "<input type='text' id='input-rfid"+id+"' />";
-		allowCell.innerHTML = createAllowListBtn(deviceArray);
+		//allowCell.innerHTML = createAllowListBtn(rfid+"-"+deviceArray);
 		activeCell.innerHTML = "<button type='button' onclick='saveNewUserBtn("+id+")'>Save</button> <button type='button' onclick='cancelUserBtn("+id+")'>Cancel</button>";
 		clickNewUser = false;
 	}
@@ -66,12 +69,13 @@ function setAllowCheckOut() {
 	getDeviceList().then(function(value) {
 		for(var i=0; i < value.length; i++) {
 			deviceArray.push(value[i].name);
+			deviceIdArray.push(value[i].deviceId);
 		}
 	});
 	
 }
 
-function createAllowListBtn(deviceArray) {
+function createAllowListBtn(rfid, deviceArray) {
 	var btn = "<div class='col-lg-12'>"+
     	"<div class='button-group'>"+
     	"<button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown'>Device List</button>" +
@@ -79,13 +83,18 @@ function createAllowListBtn(deviceArray) {
 		
 		for(var i=0; i < deviceArray.length; i++) {
 			var device = deviceArray[i];
- 			btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox'/>&nbsp;&nbsp;"+device+"</a></li>";
+			var deviceId = deviceIdArray[i];
+ 			btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+rfid+"-"+deviceId+"\")'/>&nbsp;&nbsp;"+device+"</a></li>";
  		}
  		
 		btn += "</ul>"+
 		"</div></div>";
  		
 	return btn;
+}
+
+function getAllowList() {
+	
 }
 
 //save new user info
@@ -105,7 +114,7 @@ function saveNewUserBtn(id) {
 		var rowNum = table.rows.length - 2;
 		table.rows[id+1].cells[0].innerHTML = name;
 		table.rows[id+1].cells[1].innerHTML = rfid;
-		table.riws[id+1].cells[2].innerHTML = "<button type='button' onclick='setAllowCheckOut("+id+")' >Device List</button>";
+		table.rows[id+1].cells[2].innerHTML = createAllowListBtn(rfid, deviceArray);
 		table.rows[id+1].cells[3].innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
 		addUser(name,rfid);  //add new user in firebase database
 		clickNewUser = true;
@@ -390,7 +399,6 @@ function cancelAdminBtn(id) {
 
 //delete an admin
 function deleteAdminBtn(id) {
-	//document.getElementById("admin-table").deleteRow(id);
 	
 	var newId = id + 1;
 	var table = document.getElementById("admin-table");

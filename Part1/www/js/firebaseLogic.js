@@ -68,6 +68,9 @@ addUser = function(name, rfid){
             return{ 
                 name: name,
                 rfid: rfid, 
+                usersAllowed: {
+                	0: rfid,
+                }
              };
         
        
@@ -88,8 +91,8 @@ addDevice = function(deviceId, name){
             return{ 
                 name: name,
                 deviceId: deviceId,
-                usersHas: [],
-                usersAllowed: [],
+               // usersHas: [],
+               // usersAllowed: [],
 				location: "Unknown"
             };
         
@@ -127,10 +130,11 @@ addAdmin = function(name, password, role){
 
 addAllowedUser = function(deviceId, rfid){
     //deviceId=string, rfid=string
-    
     var promise = database.ref('devices/'+deviceId).transaction(function(currData){
         database.ref('users/'+rfid).transaction(function(currData2){
             var alreadyHasDevice = false;
+            console.log("currData1: "+currData);
+            console.log("currData2: "+currData2);
             if(currData2.devicesAllowed){
                 currData2.devicesAllowed.forEach(function(item, index){
                     if (item === deviceId){
@@ -418,4 +422,8 @@ getAdminList = function(){
 		
 		}
 	});
+}
+
+getAllowDevice = function() {
+	
 }
