@@ -447,7 +447,7 @@ updateUser = function(oldRFID,updateUserName,updateRFID) {
 	deviceRef.once('value', function (snapshot) {
 		if(snapshot.exists()) {
 			snapshot.ref.update({'name':updateUserName});
-			snapshot.ref.update({'RFID':updateRFID});
+			snapshot.ref.update({'rfid':updateRFID});
 		} else {
 		
 		}

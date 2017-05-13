@@ -4,6 +4,7 @@ var editUser = "";
 var editRFID = "";
 var deviceArray = [];
 var deviceIdArray = [];
+var deviceAllowHash = {}; 
 
 //get user list
 function getUsers() {
@@ -27,7 +28,7 @@ function getUsers() {
 			allowCell.id="allow"+id;
 			activeCell.id="active"+id;
 			
-			console.log(value[i].usersAllowed);
+			//console.log(value[i].usersAllowed);
 			
 			nameCell.innerHTML = name
 			RFIDCell.innerHTML = rfid;
@@ -67,9 +68,12 @@ function addNewUserInfo() {
 //Allow User to Check Out
 function setAllowCheckOut() {
 	getDeviceList().then(function(value) {
+		console.log("Size: "+value);
 		for(var i=0; i < value.length; i++) {
+			console.log(value[i].name);
 			deviceArray.push(value[i].name);
 			deviceIdArray.push(value[i].deviceId);
+			deviceAllowHash[value[i].deviceId] = value.usersAllowed;
 		}
 	});
 	
@@ -81,10 +85,14 @@ function createAllowListBtn(rfid, deviceArray) {
     	"<button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown'>Device List</button>" +
 		"<ul class='dropdown-menu'>";
 		
+		console.log("AllowAry: "+deviceAllowHash);
+		
 		for(var i=0; i < deviceArray.length; i++) {
-			var device = deviceArray[i];
-			var deviceId = deviceIdArray[i];
- 			btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+rfid+"-"+deviceId+"\")'/>&nbsp;&nbsp;"+device+"</a></li>";
+			for(var j=0; j < deviceAllowHash.length; j++) {
+				var device = deviceArray[i];
+				var deviceId = deviceIdArray[i];
+ 				btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+rfid+"-"+deviceId+"\")'/>&nbsp;&nbsp;"+device+"</a></li>";
+ 			}
  		}
  		
 		btn += "</ul>"+
@@ -178,7 +186,8 @@ function updateUserBtn(id) {
 		var num = id+1;
  		table.rows[num].cells[0].innerHTML = user;
  		table.rows[num].cells[1].innerHTML = rfid;
- 		table.rows[num].cells[2].innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
+ 		table.rows[num].cells[2].innerHTML = createAllowListBtn(rfid, deviceArray);
+ 		table.rows[num].cells[3].innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
 	}
 }
 
@@ -208,15 +217,12 @@ function getDevices() {
 			var rowNum = table.rows.length;
 			var row = table.insertRow(rowNum);
 			var deviceCell = row.insertCell(0);
-			//var groupCell = row.insertCell(1);
 			var activeCell = row.insertCell(1);
 			
 			deviceCell.id="device"+i;
-			//groupCell.id="group"+i;
 			activeCell.id="active"+i;
-		
+			
 			deviceCell.innerHTML = value[i].name;
-			//groupCell.innerHTML = "<button type='button' onclick='setAllowCheckOut()' >User List</button>";
 			activeCell.innerHTML = "<button type='button' onclick='editDeviceBtn("+i+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+i+")'>Delete</button>";
 
      	}
@@ -279,10 +285,18 @@ function cancelDeviceBtn(id) {
 
 //delete device
 function deleteDeviceBtn(id) {
-	//console.log(id);
+	var newId = id + 1;
+	var table = document.getElementById("device-table");
+	
+	var rows = table.rows.length;
+	
 	deleteDevice(id);
-	var newId = id+1;
-	document.getElementById("device-table").deleteRow(newId);
+	
+	for(var i=1; i < rows; i++) {
+		table.deleteRow(1);
+	}
+	
+	getDevices();
 }
 
 //edit device
