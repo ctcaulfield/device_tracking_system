@@ -51,13 +51,13 @@ setupDatabase = function(){
            database.ref().set({
                 users: {},
                 devices: {},
-                admins: []
+                admins: false,
             }); 
         }
       });
 };
 
-addUser = function(name, rfid, userId){
+addUser = function(name, rfid){
     //name=string, rfid=string, devicesAllowed=[deviceIds]
     
     var promise = database.ref('users/' + rfid).transaction(function(currData){
@@ -66,8 +66,7 @@ addUser = function(name, rfid, userId){
         }else{
             return{ 
                 name: name,
-                rfid: rfid,
-                userId: userId,
+                rfid: rfid, 
              };
         }
        
@@ -327,9 +326,8 @@ getDeviceList = function() {
 }
 
 deleteDevice = function(deviceId) {
-	var deviceRef = database.ref('devices');
-	var query = deviceRef.orderByChild('deviceId').equalTo(deviceId);
-	query.on('child_added', function(snapshot) {
+	var deviceRef = database.ref('devices/'+deviceId);
+	deviceRef.on('child_added', function(snapshot) {
 		snapshot.ref.remove();
 		console.log("Device removes");
 	});
@@ -362,19 +360,18 @@ getUserList = function() {
 	return promise;
 }
 
-deleteUser = function(userId) {
-	var userRef = database.ref('users');
-	var query = deviceRef.orderByChild('userId').equalTo(deviceId);
-	query.on('child_added', function(snapshot) {
+deleteUser = function(rfid) {
+	var userRef = database.ref('users/'+rfid);
+	userRef.on('child_added', function(snapshot) {
 		snapshot.ref.remove();
 		console.log("User removes");
 	});
 }
 
-updateUser = function(userId,updateUserName, updateRFID) {
-	var deviceRef = database.ref('devices').child(userId);
+updateUser = function(oldRFID,updateUserName,updateRFID) {
+	var deviceRef = database.ref('users/'+oldRFID);
 	deviceRef.once('value', function (snapshot) {
-		if(snapshot.val() != null) {
+		if(snapshot.exists()) {
 			snapshot.ref.update({'name':updateUserName});
 			snapshot.ref.update({'RFID':updateRFID});
 		} else {
