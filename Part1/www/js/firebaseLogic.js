@@ -21,6 +21,7 @@ var setupDatabase,//()
     addDevice,//(deviceID=string, name=string, ?location=string) -> promise
 	addAdmin, //(name=string, password=string, role=string) -> promise
     addAllowedUser,//(deviceId=string, rfid=string) -> promise
+	removeAllowedUser,//(deviceId=string, rfid=string) -> promise
     checkoutDevice,//(rfid=string, deviceId=string) -> promise
     checkinDevice,//(rfid=string, deviceId=string) -> promise
     getUserData,//(rfid=string) -> promise resolves to JSON object
@@ -147,7 +148,7 @@ addAllowedUser = function(deviceId, rfid){
                 devicesAllowed.forEach(function(item, index){
                     if (item === deviceId){
                         alreadyHasDevice = true;
-                        return;
+                        
                     }
                 });
                 if(!alreadyHasDevice){
@@ -166,7 +167,7 @@ addAllowedUser = function(deviceId, rfid){
             usersAllowed.forEach(function(item, index){
                 if (item === rfid){
                     alreadyHasUser = true;
-                    return;
+                    
                 }
             });
             if(!alreadyHasUser){
@@ -175,6 +176,60 @@ addAllowedUser = function(deviceId, rfid){
             }
         }else{
             usersAllowed = [rfid];
+        }
+        database.ref('devices/'+deviceId).update({usersAllowed:usersAllowed});
+
+    });
+    promise.then(function(){
+        if(promise){
+            console.log("Successfully added user " + rfid + " to " + deviceId );
+        }else{
+            console.log("Error: Could not add user " + rfid + " to " + deviceId);
+        }
+    });
+};
+
+removeAllowedUser = function(deviceId, rfid){
+    //deviceId=string, rfid=string
+	database.ref().once('value', function(snap){
+		console.log(snap.val());
+	});
+    var promise = database.ref('devices/'+deviceId).once('value',function(snap){
+        database.ref('users/'+rfid).once('value',function(snap2){
+            
+            console.log("snap: ");
+			 console.log(snap.val());
+            console.log("snap2: ");
+			 console.log(snap2.val());
+			
+			var devicesAllowed;
+            if(snap2.val().devicesAllowed){
+				devicesAllowed = snap2.val().devicesAllowed;
+				
+                devicesAllowed.forEach(function(item, index){
+                    if (item === deviceId){
+                        devicesAllowed.splice(index, 1);
+                        
+                    }
+                });
+              
+            }else{
+                devicesAllowed = false;
+            }
+            database.ref('users/'+rfid).update({devicesAllowed:devicesAllowed})
+        });
+
+		var usersAllowed;
+        if(snap.val().usersAllowed){
+			usersAllowed = snap.val().usersAllowed;
+            usersAllowed.forEach(function(item, index){
+                if (item === rfid){
+                    usersAllowed.splice(index, 1);
+                }
+            });
+           
+        }else{
+            usersAllowed = false;
         }
         database.ref('devices/'+deviceId).update({usersAllowed:usersAllowed});
 
