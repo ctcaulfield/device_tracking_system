@@ -284,6 +284,21 @@ function cancelEditedDevice(id) {
 var clickNewAdmin= true;
 var editAdmin = "";
 
+
+// checks if admin is an admin via login info 
+function isAdmin(){
+ 	getAdminList().then(function(value) {
+		for(var i in value) {
+			var name = document.getElementById("usern").value;
+			var pass = doucment.getElementById("pass").value;
+			if(name == value[i].name && pass == value[i].password){
+				alert("works!");
+			}
+		}
+		alert("nope");
+	});	
+}
+
 //get user list
 function getAdmins() {
  	getAdminList().then(function(value) {
