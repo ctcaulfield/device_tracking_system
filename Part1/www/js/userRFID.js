@@ -16,6 +16,7 @@ var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
              particle.getEventStream({ name: 'ValidIDFound', auth: accessToken}).then(function(stream) {
               stream.on('event', callback);
             });
+			 
         };
 
 
@@ -38,11 +39,13 @@ var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
             allowedTableData = new google.visualization.DataTable();
             allowedTableData.addColumn('string', 'ID'); 
             allowedTableData.addColumn('string', 'Item');
+			allowedTableData.addColumn('string', 'Location');
             allowedTable = new google.visualization.Table(document.getElementById('allowedTable_div'));
 
             hasOutTableData = new google.visualization.DataTable();
             hasOutTableData.addColumn('string', 'ID'); 
             hasOutTableData.addColumn('string', 'Item');
+			hasOutTableData.addColumn('string', 'Location');
             hasOutTable = new google.visualization.Table(document.getElementById('hasOutTable_div'));
 
             drawTable();
@@ -52,6 +55,7 @@ var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
 
         function callback(data){
             console.log('in callback');
+			document.getElementById('userStuff').style.display = 'inline-block';
             rfid = data.data;
             document.getElementById("id_label").innerHTML = rfid;
             getUserData(rfid).then(function(value){
@@ -74,7 +78,7 @@ var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
                                });
                            }                           
                            if(!hasThisDevice){
-                               allowedTableData.addRow([value2.deviceId.toString(), value2.name]);
+                               allowedTableData.addRow([value2.deviceId.toString(), value2.name, value2.location]);
                                drawTable(); 
                            }
                            
@@ -88,7 +92,7 @@ var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
                         console.log("item in hasOut:"+item);
                         console.log("index in hasOut:"+index);
                        getDeviceData(item).then(function(value2){
-                           hasOutTableData.addRow([value2.deviceId.toString(), value2.name]);
+                           hasOutTableData.addRow([value2.deviceId.toString(), value2.name, value2.location]);
                            drawTable();
                        });                    
                     });
@@ -101,8 +105,8 @@ var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
 
         function drawTable(){
 
-            allowedTable.draw(allowedTableData, {showRowNumber: false, width: '200px', height: '100%'});
-            hasOutTable.draw(hasOutTableData, {showRowNumber: false, width: '200px', height: '100%'});
+            allowedTable.draw(allowedTableData, {showRowNumber: false, width: '100%', height: '100%'});
+            hasOutTable.draw(hasOutTableData, {showRowNumber: false, width: '100%', height: '100%'});
         }
 
 
@@ -131,6 +135,7 @@ var accessToken = "d21f86f278c11b6a2e0cc79ff4e03823d803d319";
         }
         
         function signout(){
+			document.getElementById('userStuff').style.display = 'none';
             document.getElementById("id_label").innerHTML = "ID # HERE";
             document.getElementById("welcome_h1").innerHTML = "Welcome, please scan your RFID card.";
                 

@@ -1,10 +1,49 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Hospital RFID</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>User Console</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+		body {
+			padding-top: 70px;
+			/* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+		}
+		#userStuff{
+			display: none;
+			width: 90%;
+		}
+		.checkInOutButton{
+			width: 100%;
+		}
+		.tableDiv{
+			width:100%;
+		}
+		.deviceListDiv{
+			margin-right: 10px;
+			width:48%;
+			
+		}
+		.deviceListDiv:nth-child(odd){
+			float: left;
+		}
+		.deviceListDiv:nth-child(even){
+			float: right;
+		}
+	
+    </style>
+
+	<!-- JavaScript -->
+	<script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase-database.js"></script>
@@ -13,26 +52,83 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     
     <script src="./js/firebaseLogic.js"></script>
-	<script src="./js/deviceTracking.js"></script>
 
     <script src="./js/userRFID.js"></script>
-</head>
-<body>
-    <h1 id="welcome_h1">Welcome, please scan your RFID card.</h1>
-    <p id="id_label">ID # HERE</p>
-    <input type="button" id="signout_button" value="Sign Out" onclick="signout()"/>
-    <br/><br/>
-    <div style="display:inline-block;" >
-        <div id="allowedTable_div"></div>
-        <input type="button" id="checkout_button" value="Check Out" onclick="checkoutItem()" />
-    </div>
-    
-    <div style="display:inline-block;" >
-        <div id="hasOutTable_div"></div>
-        <input type="button" id="return_button" value="Check In" onclick="returnItem()"/>
-    </div>
+	
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+  	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
     
-    
+    <script>
+
+    </script>
+
+
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">User Console</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+            <h1 id="welcome_h1">Welcome, please scan your RFID card.</h1>
+			<div id='userStuff'>
+				<p id="id_label" style="display:inline-block">ID # HERE</p>
+				<input type="button" id="signout_button" value="Sign Out" onclick="signout()" style="display:inline-block; margin-left:10px;"/>
+				
+						
+				<br/><br/>
+				<div class="bs-example">
+					<table class="table" id="user-table">
+						
+						<div class='deviceListDiv' style="display:inline-block;" >
+							<h3>Devices Available</h3>
+							<div class='tableDiv'id="allowedTable_div"></div>
+							<input class='checkInOutButton' type="button" id="checkout_button" value="Check Out" onclick="checkoutItem()" />
+						</div>
+						
+						<div class='deviceListDiv' style="display:inline-block;" >
+							<h3>Devices Checked Out</h3>
+							<div class='tableDiv' id="hasOutTable_div"></div>
+							<input class='checkInOutButton'  type="button" id="return_button" value="Check In" onclick="returnItem()"/>
+						</div>
+					</table>
+				</div>
+			</div>
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
 </body>
+
 </html>
