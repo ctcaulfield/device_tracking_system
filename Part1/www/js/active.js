@@ -2,9 +2,11 @@
 var clickNewUser = true;
 var editUser = "";
 var editRFID = "";
+var deviceArray = [];
 
 //get user list
 function getUsers() {
+	setAllowCheckOut();
  	getUserList().then(function(value) {
 		var table = document.getElementById("user-table");
 		var id = 0;
@@ -23,10 +25,10 @@ function getUsers() {
 			RFIDCell.id="rfid"+id;
 			allowCell.id="allow"+id;
 			activeCell.id="active"+id;
-		
+			
 			nameCell.innerHTML = name
 			RFIDCell.innerHTML = rfid;
-			allowCell.innerHTML = createAllowListBtn();
+			allowCell.innerHTML = createAllowListBtn(deviceArray);
 			activeCell.innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
 			id++;
 		}
@@ -53,7 +55,7 @@ function addNewUserInfo() {
 		
 		nameCell.innerHTML = "<input type='text' id='input-name"+id+"' />";
 		RFIDCell.innerHTML = "<input type='text' id='input-rfid"+id+"' />";
-		allowCell.innerHTML = createAllowListBtn();
+		allowCell.innerHTML = createAllowListBtn(deviceArray);
 		activeCell.innerHTML = "<button type='button' onclick='saveNewUserBtn("+id+")'>Save</button> <button type='button' onclick='cancelUserBtn("+id+")'>Cancel</button>";
 		clickNewUser = false;
 	}
@@ -61,22 +63,28 @@ function addNewUserInfo() {
 
 //Allow User to Check Out
 function setAllowCheckOut() {
+	getDeviceList().then(function(value) {
+		for(var i=0; i < value.length; i++) {
+			deviceArray.push(value[i].name);
+		}
+	});
 	
 }
 
-function createAllowListBtn() {
+function createAllowListBtn(deviceArray) {
 	var btn = "<div class='col-lg-12'>"+
     	"<div class='button-group'>"+
-    	"<button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown'><span class='glyphicon glyphicon-cog'></span> <span class='caret'></span></button>" +
+    	"<button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown'>Device List</button>" +
 		"<ul class='dropdown-menu'>";
 		
- 			"<li><a href='#' class='small' data-value='option1' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 1</a></li>"+
- 			"<li><a href='#' class='small' data-value='option2' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 2</a></li>"+
- 			"<li><a href='#' class='small' data-value='option3' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 3</a></li>"+
- 			"<li><a href='#' class='small' data-value='option4' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 4</a></li>"+
- 			"<li><a href='#' class='small' data-value='option5' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 5</a></li>"+
-		"</ul>"+
-		"</div>";
+		for(var i=0; i < deviceArray.length; i++) {
+			var device = deviceArray[i];
+ 			btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox'/>&nbsp;&nbsp;"+device+"</a></li>";
+ 		}
+ 		
+		btn += "</ul>"+
+		"</div></div>";
+ 		
 	return btn;
 }
 
@@ -313,21 +321,6 @@ function cancelEditedDevice(id) {
 /***** ADMINS *****/
 var clickNewAdmin= true;
 var editAdmin = "";
-
-
-// checks if admin is an admin via login info 
-function isAdmin(){
- 	getAdminList().then(function(value) {
-		for(var i in value) {
-			var name = document.getElementById("usern").value;
-			var pass = doucment.getElementById("pass").value;
-			if(name == value[i].name && pass == value[i].password){
-				alert("works!");
-			}
-		}
-		alert("nope");
-	});	
-}
 
 //get user list
 function getAdmins() {
