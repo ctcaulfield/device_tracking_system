@@ -68,8 +68,11 @@ function addNewUserInfo() {
 function setAllowCheckOut() {
 	getDeviceList().then(function(value) {
 		for(var i=0; i < value.length; i++) {
-			deviceArray.push(value[i].name);
-			deviceIdArray.push(value[i].deviceId);
+			if(value[i]){
+				deviceArray.push(value[i].name);
+				deviceIdArray.push(value[i].deviceId);
+			}
+			
 		}
 	});
 	
