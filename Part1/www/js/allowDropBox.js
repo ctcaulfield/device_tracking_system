@@ -24,6 +24,8 @@ function checkBoxEvent(event,data) {
 	var args = data.split("-");
 	var rfid = args[0];
 	var deviceId = args[1];
+	console.log("rfid: " + rfid);
+	console.log("deviceId: " + deviceId);
 	
 	if(event.checked) {
 		addAllowedUser(deviceId,rfid);
