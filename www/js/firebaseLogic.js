@@ -114,7 +114,6 @@ addAdmin = function(name, password, role){
                 role: role,
              };
         
-       
     });
     promise.then(function(){
         if(promise){
@@ -313,22 +312,6 @@ getDeviceData = function(deviceId){
     });
     return promise;
 };
-
-getAdminList = function(){
-    //returns array
-    var promise = database.ref('admins').once('value').then(function(snapshot){
-        var adminList = snapshot.val();
-        return Promise.resolve(adminList);
-    });
-    promise.then(function(){
-        if(promise){
-            console.log("Got admin list");
-        }else{
-            console.log("Error: Could not get admin list");
-        }
-    });
-    return promise;
- };
  
 getDeviceList = function() {
 	//returns array of device
@@ -366,7 +349,7 @@ updateDevice = function(deviceId,updateDeviceName) {
 }
 
 getUserList = function() {
-	//returns array of user
+	//returns json 
 	var promise = database.ref('users').once('value').then(function(snapshot) {
 		var userList = snapshot.val();
 		return Promise.resolve(userList);
@@ -395,6 +378,41 @@ updateUser = function(oldRFID,updateUserName,updateRFID) {
 		if(snapshot.exists()) {
 			snapshot.ref.update({'name':updateUserName});
 			snapshot.ref.update({'RFID':updateRFID});
+		} else {
+		
+		}
+	});
+}
+
+getAdminList = function(){
+    //returns array
+    var promise = database.ref('admins').once('value').then(function(snapshot){
+        var adminList = snapshot.val();
+        return Promise.resolve(adminList);
+    });
+    promise.then(function(value){
+        if(promise){
+            console.log("Got admin list");
+        }else{
+            console.log("Error: Could not get admin list");
+        }
+    });
+    return promise;
+ };
+ 
+ deleteAdmin = function(admin) {
+ 	var userRef = database.ref('admins/'+admin);
+	userRef.on('child_added', function(snapshot) {
+		snapshot.ref.remove();
+		console.log("User removes");
+	});
+ }
+ 
+ updateAdmin = function(admin) {
+	var deviceRef = database.ref('admins/'+admin);
+	deviceRef.once('value', function (snapshot) {
+		if(snapshot.exists()) {
+			snapshot.ref.update({'name':admin});
 		} else {
 		
 		}

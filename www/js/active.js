@@ -88,10 +88,10 @@ function deleteUserBtn(id) {
 	var newId = id + 1;
 	var table = document.getElementById("user-table");
 	var rfid = table.rows[newId].cells[1].innerHTML;
-	console.log("rfid: "+rfid);
+	
 	deleteUser(rfid);
 	var rows = table.rows.length;
-	console.log("rows: " + rows);
+	
 	for(var i=1; i < rows; i++) {
 		document.getElementById("user-table").deleteRow(1);
 	}
@@ -112,7 +112,7 @@ function editUserBtn(id) {
 	rfidCell.innerHTML = "<input type='text' id='input-rfid"+id+"' value='"+editRFID+"' />";
 	activeCell.innerHTML = "<button type='button' onclick='updateUserBtn("+id+")'>Save</button> <button type='button' onclick='cancelEditedUser("+id+")'>Cancel</button>";
 }
-
+ 
 //update user
 function updateUserBtn(id) {
 	console.log("id: "+ id);
@@ -284,23 +284,45 @@ function cancelEditedDevice(id) {
 var clickNewAdmin= true;
 var editAdmin = "";
 
+//get user list
+function getAdmins() {
+ 	getAdminList().then(function(value) {
+		var table = document.getElementById("admin-table");
+		var id = 0;
+		for(var i in value) {
+			var name = value[i].name;
+			
+			var rowNum = table.rows.length;
+			var row = table.insertRow(rowNum);
+			var adminCell = row.insertCell(0);
+			var activeCell = row.insertCell(1);
+			
+			adminCell.id="admin"+id;
+			activeCell.id="active"+id;
+		
+			adminCell.innerHTML = name;
+			activeCell.innerHTML = "<button type='button' onclick='editAdminBtn("+id+")'>Edit</button> <button type='button' onclick='deleteAdminBtn("+id+")'>Delete</button>";
+			id++;
+		}
+	});	
+}
+
 //Add Input for new Admin
 function addNewAdmin() {
 	if(clickNewAdmin) {
 		var table = document.getElementById("admin-table");
 		var rowNum = table.rows.length;
 		var row = table.insertRow(rowNum);
-		var idCell = row.insertCell(0);
-		var adminCell = row.insertCell(1);
-		var activeCell = row.insertCell(2);
-	
-		idCell.id="id"+rowNum;
-		adminCell.id="admin"+rowNum;
-		activeCell.id="active"+rowNum;
+		var adminCell = row.insertCell(0);
+		var activeCell = row.insertCell(1);
 		
-		idCell.innerHTML = rowNum;
-		adminCell.innerHTML = "<input type='text' id='input-admin"+rowNum+"' />";
-		activeCell.innerHTML = "<button type='button' onclick='saveAdminBtn("+rowNum+")'>Save</button> <button type='button' onclick='cancelAdminBtn("+rowNum+")'>Cancel</button>";
+		var id = rowNum - 1;
+		
+		adminCell.id="admin"+id;
+		activeCell.id="active"+id;
+		
+		adminCell.innerHTML = "<input type='text' id='input-admin"+id+"' />";
+		activeCell.innerHTML = "<button type='button' onclick='saveAdminBtn("+id+")'>Save</button> <button type='button' onclick='cancelAdminBtn("+id+")'>Cancel</button>";
 		clickNewAdmin = false;
 	}
 }
@@ -313,25 +335,37 @@ function saveAdminBtn(id) {
 	if(admin == "" || admin == null) {
  		alert("Please enter device name");
  	} else {
- 		//call the function from firebaseLogic.js
- 		//addUser(name,rfid,false,[]);  //add new user in firebase database
  		var table = document.getElementById("admin-table");
- 		table.rows[id].cells[1].innerHTML = admin;
- 		table.rows[id].cells[2].innerHTML = "<button type='button' onclick='editAdminBtn("+id+")'>Edit</button> <button type='button' onclick='deleteAdminBtn("+id+")'>Delete</button>";
+ 		table.rows[id+1].cells[0].innerHTML = admin;
+ 		table.rows[id+1].cells[1].innerHTML = "<button type='button' onclick='editAdminBtn("+id+")'>Edit</button> <button type='button' onclick='deleteAdminBtn("+id+")'>Delete</button>";
+ 		addAdmin(admin, "password", "admin"); //add new admin in fireabase database
  		clickNewAdmin = true;
  	}
 }
 
 //cancel new admin
 function cancelAdminBtn(id) {
-	var table = document.getElementById("admin-table").deleteRow(id);
+	var newId = id+1;
+	var table = document.getElementById("admin-table").deleteRow(newId);
 	clickNewAdmin = true;
 }
 
 //delete an admin
 function deleteAdminBtn(id) {
-	document.getElementById("admin-table").deleteRow(id);
+	//document.getElementById("admin-table").deleteRow(id);
 	
+	var newId = id + 1;
+	var table = document.getElementById("admin-table");
+	var admin = table.rows[newId].cells[0].innerHTML;
+	
+	deleteAdmin(admin);
+	
+	var rows = table.rows.length;
+	for(var i=1; i < rows; i++) {
+		document.getElementById("admin-table").deleteRow(1);
+	}
+	
+	getAdmins();
 }
 
 //edit an admin
@@ -352,6 +386,33 @@ function cancelEditedAdmin(id) {
 	
 	adminCell.innerHTML = editAdmin;
 	activeCell.innerHTML = "<button type='button' onclick='editAdminBtn("+id+")'>Edit</button> <button type='button' onclick='cancelAdminBtn("+id+")'>Delete</button>";
+
+	editAdmin = "";
+}
+
+//update admin
+function updateAdminBtn(id) {
+	var admin = document.getElementById("input-admin"+id).value;
+	
+	//Validation - Edit User input
+	if(admin == "" || admin == null) {
+		alert("Please enter admin name");
+	} else {
+		updateAdmin(admin);
+		var table = document.getElementById("admin-table");
+		var num = id+1;
+ 		table.rows[num].cells[0].innerHTML = admin;
+ 		table.rows[num].cells[1].innerHTML = "<button type='button' onclick='editAdminBtn("+id+")'>Edit</button> <button type='button' onclick='deleteAdminBtn("+id+")'>Delete</button>";
+	}
+}
+
+//cancel Edited Admin
+function cancelEditedAdmin(id) {
+	var adminCell = document.getElementById("admin"+id);
+	var activeCell = document.getElementById("active"+id);
+	
+	adminCell.innerHTML = editAdmin;
+	activeCell.innerHTML = "<button type='button' onclick='editAdminBtn("+id+")'>Edit</button> <button type='button' onclick='deleteAdminBtn("+id+")'>Delete</button>";
 
 	editAdmin = "";
 }
