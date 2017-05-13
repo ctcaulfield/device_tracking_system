@@ -19,13 +19,16 @@
 var setupDatabase,//()
     addUser,//(name=string, rfid=string) -> promise
     addDevice,//(deviceID=string, name=string, ?location=string) -> promise
+	addAdmin, //(name=string, password=string, role=string) -> promise
     addAllowedUsers,//(deviceId=string, rfid=string) -> promise
     checkoutDevice,//(rfid=string, deviceId=string) -> promise
     checkinDevice,//(rfid=string, deviceId=string) -> promise
     getUserData,//(rfid=string) -> promise resolves to JSON object
     getDeviceData,//(deviceId=string) -> promise resolves to JSON object
     getAdminList,//() -> promise resolves to JSON object
-    getDeviceList;//() ->promise resolves to JSON object
+    getDeviceList,//() ->promise resolves to JSON object
+	deleteUser, //(userId=string) 
+	updateUser; //(userId=string,updateUserName=string, updateRFID=string)
  
 
 // Initialize Firebase
@@ -61,14 +64,12 @@ addUser = function(name, rfid){
     //name=string, rfid=string, devicesAllowed=[deviceIds]
     
     var promise = database.ref('users/' + rfid).transaction(function(currData){
-        if(currData){
-            return currData;
-        }else{
+      
             return{ 
                 name: name,
                 rfid: rfid, 
              };
-        }
+        
        
     });
     promise.then(function(){
@@ -83,16 +84,14 @@ addUser = function(name, rfid){
 addDevice = function(deviceId, name, location=""){
     //deviceID=string, name=string, location=string    
     var promise = database.ref('devices/' + deviceId).transaction(function(currData){
-         if(currData){
-            return currData;
-        }else{
+
             return{ 
                 name: name,
                 deviceId: deviceId,
                 usersHas: [],
                 usersAllowed: []
             };
-        }
+        
     });
     promise.then(function(){
         if(promise){
@@ -102,6 +101,28 @@ addDevice = function(deviceId, name, location=""){
         }
     });
 
+};
+
+addAdmin = function(name, password, role){
+    //name=string, passowrd=string, role=string
+    
+    var promise = database.ref('admins/' + name).transaction(function(currData){
+
+            return{ 
+                name: name,
+                password: password,
+                role: role,
+             };
+        
+       
+    });
+    promise.then(function(){
+        if(promise){
+            console.log("Added user: " + name);
+        }else{
+            console.log("Error: Could not add user: " + name);
+        }
+    });
 };
 
 addAllowedUser = function(deviceId, rfid){
