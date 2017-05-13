@@ -205,19 +205,23 @@ function getDevices() {
     getDeviceList().then(function(value) {
     	var table = document.getElementById('device-table');
 		for(var i=0; i < value.length; i++) {
-			var rowNum = table.rows.length;
-			var row = table.insertRow(rowNum);
-			var deviceCell = row.insertCell(0);
-			//var groupCell = row.insertCell(1);
-			var activeCell = row.insertCell(1);
+			if(value[i]){
+				var rowNum = table.rows.length;
+				var row = table.insertRow(rowNum);
+				var deviceCell = row.insertCell(0);
+				//var groupCell = row.insertCell(1);
+				var activeCell = row.insertCell(1);
+
+				deviceCell.id="device"+i;
+				//groupCell.id="group"+i;
+				activeCell.id="active"+i;
+
+				deviceCell.innerHTML = value[i].name;
+				//groupCell.innerHTML = "<button type='button' onclick='setAllowCheckOut()' >User List</button>";
+				activeCell.innerHTML = "<button type='button' onclick='editDeviceBtn("+i+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+i+","+rowNum+")'>Delete</button>";
+				
+			}
 			
-			deviceCell.id="device"+i;
-			//groupCell.id="group"+i;
-			activeCell.id="active"+i;
-		
-			deviceCell.innerHTML = value[i].name;
-			//groupCell.innerHTML = "<button type='button' onclick='setAllowCheckOut()' >User List</button>";
-			activeCell.innerHTML = "<button type='button' onclick='editDeviceBtn("+i+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+i+")'>Delete</button>";
 
      	}
     }); 
@@ -233,7 +237,7 @@ function addNewDevice() {
 		//var groupCell = row.insertCell(1);
 		var activeCell = row.insertCell(1);
 		
-		var id = rowNum - 1;
+		var id = rowNum;
 		
 		nameCell.id="device"+id;
 		//groupCell.id="group"+id;
@@ -258,8 +262,8 @@ function saveNewDeviceBtn(id) {
  	} else {
  
  		var table = document.getElementById("device-table");
- 		table.rows[id+1].cells[0].innerHTML = device;
- 		table.rows[id+1].cells[1].innerHTML = "<button type='button' onclick='editDeviceBtn("+id+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+id+")'>Delete</button>";
+ 		table.rows[id].cells[0].innerHTML = device;
+ 		table.rows[id].cells[1].innerHTML = "<button type='button' onclick='editDeviceBtn("+id+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+id+")'>Delete</button>";
  		
  		//set new id and device then add them in the firebase
  		getDeviceList().then(function(value) {
@@ -271,18 +275,16 @@ function saveNewDeviceBtn(id) {
 }
 
 //cancel new device
-function cancelDeviceBtn(id) {
-	var newId = id+1;
-	document.getElementById("device-table").deleteRow(newId);
+function cancelDeviceBtn(row) {
+	document.getElementById("device-table").deleteRow(row);
 	clickNewDevice = true;
 }
 
 //delete device
-function deleteDeviceBtn(id) {
+function deleteDeviceBtn(id, row) {
 	//console.log(id);
 	deleteDevice(id);
-	var newId = id+1;
-	document.getElementById("device-table").deleteRow(newId);
+	document.getElementById("device-table").deleteRow(row);
 }
 
 //edit device
