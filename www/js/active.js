@@ -16,14 +16,17 @@ function getUsers() {
 			var row = table.insertRow(rowNum);
 			var nameCell = row.insertCell(0);
 			var RFIDCell = row.insertCell(1);
-			var activeCell = row.insertCell(2);
+			var allowCell = row.insertCell(2);
+			var activeCell = row.insertCell(3);
 			
 			nameCell.id="name"+id;
 			RFIDCell.id="rfid"+id;
+			allowCell.id="allow"+id;
 			activeCell.id="active"+id;
 		
 			nameCell.innerHTML = name
 			RFIDCell.innerHTML = rfid;
+			allowCell.innerHTML = createAllowListBtn();
 			activeCell.innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
 			id++;
 		}
@@ -38,19 +41,43 @@ function addNewUserInfo() {
 		var row = table.insertRow(rowNum);
 		var nameCell = row.insertCell(0);
 		var RFIDCell = row.insertCell(1);
-		var activeCell = row.insertCell(2);
+		var allowCell = row.insertCell(2);
+		var activeCell = row.insertCell(3);
 		
 		var id = rowNum - 1;
 		
 		nameCell.id="name"+id;
 		RFIDCell.id="rfid"+id;
+		allowCell.id="allow"+id;
 		activeCell.id="active"+id;
 		
 		nameCell.innerHTML = "<input type='text' id='input-name"+id+"' />";
 		RFIDCell.innerHTML = "<input type='text' id='input-rfid"+id+"' />";
+		allowCell.innerHTML = createAllowListBtn();
 		activeCell.innerHTML = "<button type='button' onclick='saveNewUserBtn("+id+")'>Save</button> <button type='button' onclick='cancelUserBtn("+id+")'>Cancel</button>";
 		clickNewUser = false;
 	}
+}
+
+//Allow User to Check Out
+function setAllowCheckOut() {
+	
+}
+
+function createAllowListBtn() {
+	var btn = "<div class='col-lg-12'>"+
+    	"<div class='button-group'>"+
+    	"<button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown'><span class='glyphicon glyphicon-cog'></span> <span class='caret'></span></button>" +
+		"<ul class='dropdown-menu'>";
+		
+ 			"<li><a href='#' class='small' data-value='option1' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 1</a></li>"+
+ 			"<li><a href='#' class='small' data-value='option2' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 2</a></li>"+
+ 			"<li><a href='#' class='small' data-value='option3' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 3</a></li>"+
+ 			"<li><a href='#' class='small' data-value='option4' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 4</a></li>"+
+ 			"<li><a href='#' class='small' data-value='option5' tabIndex='-1'><input type='checkbox'/>&nbsp;Option 5</a></li>"+
+		"</ul>"+
+		"</div>";
+	return btn;
 }
 
 //save new user info
@@ -70,7 +97,8 @@ function saveNewUserBtn(id) {
 		var rowNum = table.rows.length - 2;
 		table.rows[id+1].cells[0].innerHTML = name;
 		table.rows[id+1].cells[1].innerHTML = rfid;
-		table.rows[id+1].cells[2].innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
+		table.riws[id+1].cells[2].innerHTML = "<button type='button' onclick='setAllowCheckOut("+id+")' >Device List</button>";
+		table.rows[id+1].cells[3].innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
 		addUser(name,rfid);  //add new user in firebase database
 		clickNewUser = true;
 	}
@@ -163,43 +191,45 @@ function getDevices() {
 			var rowNum = table.rows.length;
 			var row = table.insertRow(rowNum);
 			var deviceCell = row.insertCell(0);
-			var groupCell = row.insertCell(1);
-			var activeCell = row.insertCell(2);
+			//var groupCell = row.insertCell(1);
+			var activeCell = row.insertCell(1);
 			
 			deviceCell.id="device"+i;
-			groupCell.id="group"+i;
+			//groupCell.id="group"+i;
 			activeCell.id="active"+i;
 		
 			deviceCell.innerHTML = value[i].name;
-			groupCell.innerHTML = "<button type='button' onclick='alert(\"Group\")' >Group</button>";
+			//groupCell.innerHTML = "<button type='button' onclick='setAllowCheckOut()' >User List</button>";
 			activeCell.innerHTML = "<button type='button' onclick='editDeviceBtn("+i+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+i+")'>Delete</button>";
 
      	}
     }); 
 }
 
-//Add Input for new user info
+//Add Input for new device info
 function addNewDevice() {
 	if(clickNewDevice) {
 		var table = document.getElementById("device-table");
 		var rowNum = table.rows.length;
 		var row = table.insertRow(rowNum);
 		var nameCell = row.insertCell(0);
-		var groupCell = row.insertCell(1);
-		var activeCell = row.insertCell(2);
+		//var groupCell = row.insertCell(1);
+		var activeCell = row.insertCell(1);
 		
 		var id = rowNum - 1;
 		
 		nameCell.id="device"+id;
-		groupCell.id="group"+id;
+		//groupCell.id="group"+id;
 		activeCell.id="active"+id;
 		
 		nameCell.innerHTML = "<input type='text' id='input-device"+id+"' />";
-		groupCell.innerHTML = "<button type='button' onclick='alert(\"Group\")' >Group</button>";
+		//groupCell.innerHTML = "<button type='button' onclick='setAllowCheckOut()' >User List</button>";
 		activeCell.innerHTML = "<button type='button' onclick='saveNewDeviceBtn("+id+")'>Save</button><button type='button' onclick='cancelDeviceBtn("+id+")'>Cancel</button>";
 		clickNewDevice = false;
 	}
 }
+
+
 
 //save new device
 function saveNewDeviceBtn(id) {
@@ -212,7 +242,7 @@ function saveNewDeviceBtn(id) {
  
  		var table = document.getElementById("device-table");
  		table.rows[id+1].cells[0].innerHTML = device;
- 		table.rows[id+1].cells[2].innerHTML = "<button type='button' onclick='editDeviceBtn("+id+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+id+")'>Delete</button>";
+ 		table.rows[id+1].cells[1].innerHTML = "<button type='button' onclick='editDeviceBtn("+id+")'>Edit</button> <button type='button' onclick='deleteDeviceBtn("+id+")'>Delete</button>";
  		
  		//set new id and device then add them in the firebase
  		getDeviceList().then(function(value) {
