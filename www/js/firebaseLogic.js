@@ -81,7 +81,7 @@ addUser = function(name, rfid){
     });
 };
 
-addDevice = function(deviceId, name, location=""){
+addDevice = function(deviceId, name){
     //deviceID=string, name=string, location=string    
     var promise = database.ref('devices/' + deviceId).transaction(function(currData){
 
@@ -89,7 +89,8 @@ addDevice = function(deviceId, name, location=""){
                 name: name,
                 deviceId: deviceId,
                 usersHas: [],
-                usersAllowed: []
+                usersAllowed: [],
+				location: "Unknown"
             };
         
     });
