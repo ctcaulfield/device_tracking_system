@@ -87,11 +87,9 @@ function createAllowListBtn(rfid, deviceArray) {
 		console.log("AllowAry: "+deviceAllowHash);
 		
 		for(var i=0; i < deviceArray.length; i++) {
-			for(var j=0; j < deviceAllowHash.length; j++) {
-				var device = deviceArray[i];
-				var deviceId = deviceIdArray[i];
- 				btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+rfid+"-"+deviceId+"\")'/>&nbsp;&nbsp;"+device+"</a></li>";
- 			}
+			var device = deviceArray[i];
+			var deviceId = deviceIdArray[i];
+ 			btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+rfid+"-"+deviceId+"\")'/>&nbsp;&nbsp;"+device+"</a></li>";
  		}
  		
 		btn += "</ul>"+
