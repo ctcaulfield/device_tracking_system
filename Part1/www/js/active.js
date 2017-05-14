@@ -338,16 +338,23 @@ var editAdmin = "";
 
 
 function isAdmin(){
+	var valid = false;
   	getAdminList().then(function(value) {
  		for(var i in value) {
  			var name = document.getElementById("usern").value;
  			var pass = document.getElementById("pass").value;
  			console.log(name+pass);
 	 		if((name == value[i].name) && (pass == value[i].password)){
-	 			alert("correct");
+	 			
+				valid = true;
 	 		}
  		}
- 		alert("incorrect");
+		if(valid){
+			alert("correct");
+		}else{
+			alert("incorrect");
+		}
+ 		
  	});	
  }
 

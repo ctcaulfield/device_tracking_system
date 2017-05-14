@@ -16,20 +16,13 @@ database.ref().once('value').then(function(snap){
 //var auth = firebase.auth();
 var uuid = "2B44B5A65B024AC987AE69E426A37F7B".toLowerCase();
 
-var major = 1;
-var minor = 1;
-
 var hereBeacons = ["none"];
 var prevBeacons = [];
 var thisInterval;
 
-///Other ways to scan for 'bleacons'
-Bleacon.startScanning();//scans for any "bleacons"
-Bleacon.startScanning(uuid, major);//uuid + major
-Bleacon.startScanning(uuid, major, minor);//uuid + major + minor
 
 //////we're using this one
-Bleacon.startScanning(); //scans for a particular id
+Bleacon.startScanning(uuid); //scans for a particular id
 
 Bleacon.on('discover', function(bleacon){
 
