@@ -138,7 +138,7 @@ function deleteUserBtn(id) {
 	var newId = id + 1;
 	var table = document.getElementById("user-table");
 	var rfid = table.rows[newId].cells[1].innerHTML;
-	
+	console.log(rfid);
 	deleteUser(rfid);
 	
 	var rows = table.rows.length;

@@ -435,11 +435,7 @@ getUserList = function() {
 }
 
 deleteUser = function(rfid) {
-	var userRef = database.ref('users/'+rfid);
-	userRef.on('child_added', function(snapshot) {
-		snapshot.ref.remove();
-		console.log("User removes");
-	});
+	var userRef = database.ref('users/'+rfid).set({});
 }
 
 updateUser = function(oldRFID,updatedUser,updatedRFID) {
