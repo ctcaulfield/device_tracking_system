@@ -84,7 +84,7 @@ function createAllowListBtn(rfid, deviceArray) {
     	"<button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown'>Device List</button>" +
 		"<ul class='dropdown-menu'>";
 		
-		//console.log("AllowAry: "+deviceAllowHash);
+		console.log("AllowAry: "+deviceAllowHash);
 		
 		for(var i=0; i < deviceArray.length; i++) {
 			for(var j=0; j < deviceAllowHash.length; j++) {
@@ -210,6 +210,7 @@ function cancelEditedUser(id) {
 var clickNewDevice = true;
 var editDevice = "";
 
+// get device list
 function getDevices() {
     getDeviceList().then(function(value) {
     	var table = document.getElementById('device-table');
@@ -239,23 +240,18 @@ function addNewDevice() {
 		var rowNum = table.rows.length;
 		var row = table.insertRow(rowNum);
 		var nameCell = row.insertCell(0);
-		//var groupCell = row.insertCell(1);
 		var activeCell = row.insertCell(1);
 		
 		var id = rowNum;
 		
 		nameCell.id="device"+id;
-		//groupCell.id="group"+id;
 		activeCell.id="active"+id;
 		
 		nameCell.innerHTML = "<input type='text' id='input-device"+id+"' />";
-		//groupCell.innerHTML = "<button type='button' onclick='setAllowCheckOut()' >User List</button>";
 		activeCell.innerHTML = "<button type='button' onclick='saveNewDeviceBtn("+id+")'>Save</button><button type='button' onclick='cancelDeviceBtn("+id+")'>Cancel</button>";
 		clickNewDevice = false;
 	}
 }
-
-
 
 //save new device
 function saveNewDeviceBtn(id) {
@@ -286,7 +282,6 @@ function cancelDeviceBtn(row) {
 }
 
 //delete device
-
 function deleteDeviceBtn(id) {
 	var newId = id + 1;
 	var table = document.getElementById("device-table");
@@ -301,11 +296,6 @@ function deleteDeviceBtn(id) {
 	
 	getDevices();
 }
-// function deleteDeviceBtn(id, row) {
-// 	//console.log(id);
-// 	deleteDevice(id);
-// 	document.getElementById("device-table").deleteRow(row);
-// }
 
 //edit device
 function editDeviceBtn(id) {
@@ -396,8 +386,6 @@ function getAdmins() {
 		}
 	});	
 }
-
-
 
 //Add Input for new Admin
 function addNewAdmin() {

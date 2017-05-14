@@ -442,16 +442,20 @@ deleteUser = function(rfid) {
 	});
 }
 
-updateUser = function(oldRFID,updateUserName,updateRFID) {
-	var deviceRef = database.ref('users/'+oldRFID);
-	deviceRef.once('value', function (snapshot) {
-		if(snapshot.exists()) {
-			snapshot.ref.update({'name':updateUserName});
-			snapshot.ref.update({'rfid':updateRFID});
-		} else {
-		
-		}
-	});
+updateUser = function(oldRFID,updatedUser,updatedRFID) {
+	deleteUser(oldRFID);
+	
+	addUser(updatedUser,updatedRFID);
+	
+	// var userRef2 = database.ref('users/'+oldRFID);
+// 	userRef.once('value', function (snapshot) {
+// 		if(snapshot.exists()) {
+// 			snapshot.ref.update({'name':updateUserName});
+// 			snapshot.ref.update({'rfid':updateRFID});
+// 		} else {
+// 		
+// 		}
+// 	});
 }
 
 getAdminList = function(){
