@@ -354,11 +354,10 @@ function isAdmin(){
 	 		}
  		}
 		if(valid){
-			alert("correct");
+			window.location.href = "index.html";
 		}else{
 			alert("incorrect");
 		}
- 		
  	});	
  }
 
