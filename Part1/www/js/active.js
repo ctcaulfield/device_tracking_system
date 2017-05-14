@@ -32,7 +32,8 @@ function getUsers() {
 			
 			nameCell.innerHTML = name
 			RFIDCell.innerHTML = rfid;
-			allowCell.innerHTML = createAllowListBtn(rfid, deviceArray);
+			console.log(value[i]);
+			allowCell.innerHTML = createAllowListBtn(rfid, deviceArray, value[i].devicesAllowed);
 			activeCell.innerHTML = "<button type='button' onclick='editUserBtn("+id+")'>Edit</button> <button type='button' onclick='deleteUserBtn("+id+")'>Delete</button>";
 			id++;
 		}
@@ -72,24 +73,37 @@ function setAllowCheckOut() {
 			if(value[i]){
 				deviceArray.push(value[i].name);
 				deviceIdArray.push(value[i].deviceId);
-				deviceAllowHash[value[i].deviceId] = value.usersAllowed;
 			}
 		}
 	});
 }
 
-function createAllowListBtn(rfid, deviceArray) {
+function createAllowListBtn(rfid, deviceArray, devicesAllowed) {
+	
+	
 	var btn = "<div class='col-lg-12'>"+
     	"<div class='button-group'>"+
     	"<button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown'>Device List</button>" +
 		"<ul class='dropdown-menu'>";
-		
-		console.log("AllowAry: "+deviceAllowHash);
+				
+		console.log(devicesAllowed)
+	
 		
 		for(var i=0; i < deviceArray.length; i++) {
 			var device = deviceArray[i];
 			var deviceId = deviceIdArray[i];
- 			btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+rfid+"-"+deviceId+"\")'/>&nbsp;&nbsp;"+device+"</a></li>";
+			var checked = "";
+			console.log(devicesAllowed);
+			if(devicesAllowed != null){
+				console.log('has devicesAllowed');
+				console.log(devicesAllowed.indexOf(deviceId.toString()));
+				if(devicesAllowed.indexOf(deviceId.toString()) != -1){
+					checked = "checked";
+				}
+			}
+			console.log("<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+dataString+"\")' "+checked+"/>&nbsp;&nbsp;"+device+"</a></li>");
+			var dataString = rfid + "-" + deviceId;
+ 			btn += "<li><a href='#' class='small' data-value='"+device+"' tabIndex='-1'><input type='checkbox' onclick='checkBoxEvent(this,\""+dataString+"\")' "+checked+" >&nbsp;&nbsp;"+device+"</a></li>";
  		}
  		
 		btn += "</ul>"+

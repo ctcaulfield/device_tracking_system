@@ -26,8 +26,8 @@ function checkBoxEvent(event,data) {
 	var deviceId = args[1];
 	
 	if(event.checked) {
-		//addAllowedUser(deviceId,rfid);
+		addAllowedUser(deviceId,rfid);
 	} else {
-		//removeAllowedUser(deviceId,rfid);
+		removeAllowedUser(deviceId,rfid);
 	}
 }
