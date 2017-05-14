@@ -336,6 +336,21 @@ function cancelEditedDevice(id) {
 var clickNewAdmin= true;
 var editAdmin = "";
 
+
+function isAdmin(){
+  	getAdminList().then(function(value) {
+ 		for(var i in value) {
+ 			var name = document.getElementById("usern").value;
+ 			var pass = document.getElementById("pass").value;
+ 			console.log(name+pass);
+	 		if((name == value[i].name) && (pass == value[i].password)){
+	 			alert("correct");
+	 		}
+ 		}
+ 		alert("incorrect");
+ 	});	
+ }
+
 //get user list
 function getAdmins() {
  	getAdminList().then(function(value) {
@@ -358,6 +373,8 @@ function getAdmins() {
 		}
 	});	
 }
+
+
 
 //Add Input for new Admin
 function addNewAdmin() {
